@@ -1,10 +1,7 @@
 pipeline{
     agent any
     
-    environment{
-        PATH = "/opt/maven3/bin:$PATH"
-    }
-    stages{
+   stages{
         stage("Git Checkout"){
             steps{
                 git credentialsId: 'javahome2', url: 'https://github.com/Reyanshi99/devops.git'
@@ -18,13 +15,13 @@ pipeline{
         }
         stage("deploy-dev"){
             steps{
-                sshagent(['tomcat-new']) {
+                sshagent(['tomcat-cred']) {
                 sh """
-                    scp -o StrictHostKeyChecking=no target/myweb.war  ec2-user@172.31.1.22:/home/ec2-user/apache-tomcat-9.0.63/webapps/
+                    scp -o StrictHostKeyChecking=no target/myweb.war  ec2-user@54.175.15.211:/home/ec2-user/apache-tomcat-10.1.9/webapps/
                     
-                    ssh ec2-user@172.31.1.22 /home/ec2-user/apache-tomcat-9.0.63/bin/shutdown.sh
+                    ssh ec2-user@54.175.15.211 /home/ec2-user/apache-tomcat-10.1.9/bin/shutdown.sh
                     
-                    ssh ec2-user@172.31.1.22 /home/ec2-user/apache-tomcat-9.0.63/bin/startup.sh
+                    ssh ec2-user@54.175.15.211 /home/ec2-user/apache-tomcat-10.1.9/bin/startup.sh
                 
                 """
             }

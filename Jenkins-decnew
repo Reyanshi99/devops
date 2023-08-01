@@ -1,31 +1,41 @@
-pipeline{
+pipeline {
     agent any
-    }
-    stages{
-        stage("Git Checkout"){
-            steps{
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout the source code from the repository using the configured credentials
                 git credentialsId: 'javahome2', url: 'https://github.com/Reyanshi99/devops.git'
             }
         }
-        stage("Maven Build"){
-            steps{
-                sh "mvn clean package"
-                sh "mv target/*.war target/myweb.war"
+
+        stage('Build') {
+            steps {
+                // Replace these commands with the actual build commands for your web application
+                sh 'mvn clean package'  // For Java applications with Maven
+		sh "mv target/*.war target/myweb.war"
             }
         }
-        stage("deploy-dev"){
-            steps{
-                sshagent(['tomcat-cred']) {
-                sh """
-                    scp -o StrictHostKeyChecking=no target/myweb.war  ec2-user@54.175.15.211:/home/ec2-user/apache-tomcat-10.1.9/webapps/
-                    
-                    ssh ec2-user@54.175.15.211 /home/ec2-user/apache-tomcat-10.1.9/bin/shutdown.sh
-                    
-                    ssh ec2-user@54.175.15.211 /home/ec2-user/apache-tomcat-10.1.9/bin/startup.sh
-                
-                """
+
+        stage('Test') {
+            steps {
+                // Replace these commands with the actual test commands for your web application
+                sh 'mvn test'  // For Java applications with Maven
             }
-            
+        }
+
+        stage('Deploy') {
+            steps {
+                // Replace these commands with the actual deployment commands for your web application
+                // For example, copy the built files to the web server directory
+		 sshagent(['tomcat-cred']) {
+                sh """
+                    scp -o StrictHostKeyChecking=no target/myweb.war  ec2-user@172.31.1.22:/home/ec2-user/apache-tomcat-9.0.63/webapps/
+                    
+                    ssh ec2-user@172.31.1.22 /home/ec2-user/apache-tomcat-9.0.63/bin/shutdown.sh
+                    
+                    ssh ec2-user@172.31.1.22 /home/ec2-user/apache-tomcat-9.0.63/bin/startup.sh
             }
         }
     }
+}
